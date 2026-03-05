@@ -1,0 +1,130 @@
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────────────────────────
+   Tailwind v4 — dark mode via classe .dark no <html>
+   @variant expõe o prefixo dark: nos utilitários Tailwind
+───────────────────────────────────────────────────────────── */
+@variant dark (&:where(.dark, .dark *));
+
+/* ─────────────────────────────────────────────────────────────
+   Tokens de Design — registrados via @theme do Tailwind v4
+   Geram automaticamente: bg-*, text-*, border-*, ring-*, etc.
+   e suportam modificadores de opacidade (/50, /80, …)
+───────────────────────────────────────────────────────────── */
+@theme {
+  /*
+   * Fonte principal — aponta para a variável CSS injetada pelo Next.js no <html>.
+   * Gera a utility `font-sans` e é usada no body via globals.css.
+   */
+  --font-family-sans: var(--font-space-grotesk), system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  /* Cor de marca (fixas — não mudam com tema) */
+  --color-brand:       #3b82f6;
+  --color-brand-dark:  #2563eb;
+  --color-brand-light: #60a5fa;
+
+  /* Feedback (fixas) */
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error:   #ef4444;
+  --color-info:    #3b82f6;
+
+  /* Cores semânticas — apontam para variáveis CSS que mudam com .dark */
+  --color-canvas:      var(--canvas);
+  --color-canvas-2:    var(--canvas-2);
+  --color-surface:     var(--surface);
+  --color-surface-2:   var(--surface-2);
+  --color-ink:         var(--ink);
+  --color-ink-muted:   var(--ink-muted);
+  --color-ink-faint:   var(--ink-faint);
+  --color-stroke:      var(--stroke);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Variáveis CSS adaptativas — Modo Claro
+───────────────────────────────────────────────────────────── */
+:root {
+  --canvas:    #f8fafc;
+  --canvas-2:  #f1f5f9;
+  --surface:   #ffffff;
+  --surface-2: #f9fafb;
+
+  --ink:       #1e293b;
+  --ink-muted: #64748b;
+  --ink-faint: #94a3b8;
+
+  --stroke:    #e2e8f0;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Variáveis CSS adaptativas — Modo Escuro
+───────────────────────────────────────────────────────────── */
+.dark {
+  --canvas:    #0f172a;
+  --canvas-2:  #1e293b;
+  --surface:   #1e293b;
+  --surface-2: #273449;
+
+  --ink:       #f1f5f9;
+  --ink-muted: #94a3b8;
+  --ink-faint: #64748b;
+
+  --stroke:    #334155;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Aliases de compatibilidade — usados nos componentes existentes
+   São utilitários CSS puro (sem suporte a /opacity modifier)
+───────────────────────────────────────────────────────────── */
+@layer utilities {
+  /* Backgrounds */
+  .bg-app               { background-color: var(--canvas); }
+  .bg-app-secondary     { background-color: var(--canvas-2); }
+
+  /* Texto */
+  .text-primary         { color: var(--ink); }
+  .text-secondary       { color: var(--ink-muted); }
+  .text-tertiary        { color: var(--ink-faint); }
+
+  /* Borda */
+  .border-default       { border-color: var(--stroke); }
+
+  /* Glassmorphism — versões semitransparentes para navbar/footer */
+  .bg-surface-glass     { background-color: color-mix(in srgb, var(--surface) 85%, transparent); }
+  .bg-canvas-glass      { background-color: color-mix(in srgb, var(--canvas) 90%, transparent); }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Reset e Base Global
+───────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* font-sans aplica Space Grotesk via --font-family-sans do @theme */
+  font-family: var(--font-family-sans);
+}
+
+body {
+  margin: 0;
+  background-color: var(--canvas);
+  color: var(--ink);
+  font-family: inherit;
+  font-weight: 400;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* Hierarquia de pesos — Space Grotesk 300–700 */
+h1, h2, h3, h4, h5, h6 {
+  font-family: inherit;
+  font-weight: 700;
+}
+
+p, li, span, a, label, input, textarea, button {
+  font-family: inherit;
+}
