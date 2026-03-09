@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "./theme-toggle";
 
 const navLinks = [
-  { href: "/#planos", label: "Planos" },
+  { href: "/download", label: "Baixar" },
 ];
 
 export function Navbar() {

@@ -29,6 +29,9 @@ export function Footer() {
             <Link href="/termos_de_uso" className="transition-colors hover:text-primary">
               Termos de Uso
             </Link>
+            <Link href="/suporte" className="transition-colors hover:text-primary">
+              Suporte
+            </Link>
           </div>
           <p className="text-xs text-tertiary md:text-sm">
             © {year} Editai. Todos os direitos reservados.

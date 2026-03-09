@@ -19,18 +19,17 @@ export default function HomePage() {
             </h1>
             <p className="max-w-md text-sm text-secondary md:text-base">
               Transforme suas ideias em imagens incríveis em poucos cliques.
-              Assine um plano, envie suas fotos e receba resultados profissionais
-              com inteligência artificial.
+              Crie sua conta gratuita, envie suas fotos e receba resultados
+              profissionais com inteligência artificial.
             </p>
             <div className="flex flex-wrap items-center gap-3">
               <Link href="/criar_conta">
                 <Button size="lg">Criar conta</Button>
               </Link>
-              <a href="#planos">
-                <Button variant="secondary" size="lg">Ver planos</Button>
-              </a>
+              <Link href="/download">
+                <Button variant="secondary" size="lg">Baixar o app</Button>
+              </Link>
             </div>
-            <p className="text-xs text-tertiary">Sem compromisso. Cancele quando quiser.</p>
           </div>
 
           {/* Mockup do app */}
@@ -50,15 +49,8 @@ export default function HomePage() {
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-primary">Nova edição criada</p>
                   <p className="text-xs text-secondary">
-                    Sua imagem está pronta. Use mais créditos para gerar novas variações.
+                    Sua imagem está pronta. Gere novas variações quando quiser.
                   </p>
-                </div>
-                <div className="flex items-center justify-between rounded-2xl bg-surface px-3 py-2">
-                  <div className="space-y-0.5">
-                    <p className="text-xs font-medium text-primary">Créditos disponíveis</p>
-                    <p className="text-xs text-secondary">120 créditos</p>
-                  </div>
-                  <Button size="sm">Comprar créditos</Button>
                 </div>
               </div>
             </Card>
@@ -70,14 +62,14 @@ export default function HomePage() {
       <Section
         id="como-funciona"
         title="Como o Editai funciona"
-        subtitle="Você só precisa escolher um plano, enviar suas fotos e deixar a IA fazer o resto."
+        subtitle="Você só precisa baixar o app, enviar suas fotos e deixar a IA fazer o resto."
       >
         <div className="grid gap-6 md:grid-cols-3">
           {[
             {
               step: "01",
-              title: "Escolha um plano",
-              description: "Selecione o pacote de créditos que mais combina com a sua rotina.",
+              title: "Baixe o app",
+              description: "Baixe o Editai gratuitamente na Google Play ou App Store.",
             },
             {
               step: "02",
@@ -100,60 +92,6 @@ export default function HomePage() {
         </div>
       </Section>
 
-      {/* ── Planos ── */}
-      <Section
-        id="planos"
-        title="Planos para o seu momento"
-        subtitle="Comece no seu ritmo. Você pode assinar um plano mensal e comprar créditos extras quando precisar."
-      >
-        <div className="grid gap-6 md:grid-cols-3">
-          <Card className="flex h-full flex-col p-6">
-            <h3 className="text-base font-semibold text-primary md:text-lg">Básico</h3>
-            <p className="mt-1 text-sm text-secondary">Ideal para testar o Editai e criar edições pontuais.</p>
-            <p className="mt-4 text-3xl font-bold tracking-tight text-primary">
-              R$ 29<span className="text-sm font-normal text-secondary">/mês</span>
-            </p>
-            <ul className="mt-4 space-y-2 text-sm text-secondary">
-              <li>• 100 créditos por mês</li>
-              <li>• Geração básica de fotos</li>
-              <li>• Suporte por email</li>
-            </ul>
-            <Button className="mt-6 w-full">Assinar</Button>
-          </Card>
-
-          <Card highlighted className="relative flex h-full flex-col p-6">
-            <span className="absolute right-4 top-4 rounded-full bg-brand/10 px-3 py-1 text-xs font-medium text-brand">
-              Mais popular
-            </span>
-            <h3 className="text-base font-semibold text-primary md:text-lg">Pro</h3>
-            <p className="mt-1 text-sm text-secondary">Perfeito para criadores de conteúdo e pequenos negócios.</p>
-            <p className="mt-4 text-3xl font-bold tracking-tight text-primary">
-              R$ 79<span className="text-sm font-normal text-secondary">/mês</span>
-            </p>
-            <ul className="mt-4 space-y-2 text-sm text-secondary">
-              <li>• 400 créditos por mês</li>
-              <li>• Fila prioritária</li>
-              <li>• Resultados em alta resolução</li>
-            </ul>
-            <Button className="mt-6 w-full">Assinar</Button>
-          </Card>
-
-          <Card className="flex h-full flex-col p-6">
-            <h3 className="text-base font-semibold text-primary md:text-lg">Premium</h3>
-            <p className="mt-1 text-sm text-secondary">Para quem precisa de volume e máxima flexibilidade.</p>
-            <p className="mt-4 text-3xl font-bold tracking-tight text-primary">
-              R$ 149<span className="text-sm font-normal text-secondary">/mês</span>
-            </p>
-            <ul className="mt-4 space-y-2 text-sm text-secondary">
-              <li>• 1.000 créditos por mês</li>
-              <li>• Suporte prioritário</li>
-              <li>• Créditos extras com desconto</li>
-            </ul>
-            <Button className="mt-6 w-full">Assinar</Button>
-          </Card>
-        </div>
-      </Section>
-
       {/* ── Benefícios ── */}
       <Section
         title="Pensado para criadores, marcas e você"
@@ -171,8 +109,8 @@ export default function HomePage() {
                 description: "Envie suas fotos e receba as criações prontas em poucos instantes.",
               },
               {
-                title: "Créditos flexíveis",
-                description: "Use seus créditos como quiser e compre mais a qualquer momento.",
+                title: "100% gratuito",
+                description: "Use o Editai sem custo. Crie e edite fotos com IA quando quiser.",
               },
               {
                 title: "Segurança e privacidade",
@@ -200,7 +138,7 @@ export default function HomePage() {
               redes sociais, vitrines de e-commerce, fotos profissionais ou projetos pessoais.
             </p>
             <p className="mt-3 text-sm text-secondary">
-              Comece com poucos créditos e aumente conforme seu uso cresce, sem complicações.
+              Use o Editai gratuitamente, sem complicações.
             </p>
           </Card>
         </div>
@@ -224,9 +162,9 @@ export default function HomePage() {
                   <Link href="/criar_conta">
                     <Button size="lg">Criar conta agora</Button>
                   </Link>
-                  <a href="#planos">
-                    <Button variant="secondary" size="lg">Ver planos</Button>
-                  </a>
+                  <Link href="/download">
+                    <Button variant="secondary" size="lg">Baixar o app</Button>
+                  </Link>
                 </div>
               </div>
             </div>
