@@ -55,6 +55,7 @@ export async function createSubscriptionWithCard(
     nextDueDate,
     cycle: "MONTHLY",
     description: params.description,
+    externalReference: "Assinatura Editai APP",
     creditCard: {
       holderName: params.creditCard.holderName.trim(),
       number: params.creditCard.number.replace(/\D/g, ""),

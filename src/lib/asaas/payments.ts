@@ -49,6 +49,7 @@ export async function createPaymentWithCard(
     value: params.value,
     dueDate,
     description: params.description,
+    externalReference: "Credito Extra Editai APP",
     creditCard: {
       holderName: params.creditCard.holderName.trim(),
       number: params.creditCard.number.replace(/\D/g, ""),
@@ -114,6 +115,7 @@ export async function createPaymentWithPix(
     value: params.value,
     dueDate,
     description: params.description,
+    externalReference: "Credito Extra Editai APP",
   };
 
   try {
