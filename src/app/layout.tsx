@@ -1,9 +1,13 @@
 import type { ReactNode } from "react";
-import { Space_Grotesk } from "next/font/google";
+import { Space_Grotesk, Geist } from "next/font/google";
 import "@/app/globals.css";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+
 
 /*
  * Space Grotesk carregado com todos os pesos suportados (300–700).
@@ -27,7 +31,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html
       lang="pt-BR"
       suppressHydrationWarning
-      className={spaceGrotesk.variable}
+      className={cn("font-sans", geist.variable)}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
