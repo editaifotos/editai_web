@@ -186,6 +186,9 @@ function CheckoutForm() {
           <p className="mt-2 text-sm text-secondary">
             Preencha seus dados e do cartão para concluir a assinatura.
           </p>
+          <p className="mt-3 rounded-xl border border-brand/30 bg-brand/5 px-4 py-2.5 text-sm text-secondary">
+            Já tem conta no app? Use o mesmo e-mail que você usa para acessar o Editai.
+          </p>
 
           <form className="mt-6 space-y-5" onSubmit={handleSubmit} noValidate>
             <div className="space-y-4">

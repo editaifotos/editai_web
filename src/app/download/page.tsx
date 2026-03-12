@@ -7,9 +7,9 @@ import { Card } from "@/components/ui/card";
 
 type Platform = "android" | "ios" | "desktop" | null;
 
-/* ─── Links das lojas (substituir quando disponíveis) ─── */
-const PLAY_STORE_URL = "#";
-const APP_STORE_URL = "#";
+/* ─── Links das lojas ─── */
+const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.editai.app";
+const APP_STORE_URL = "https://apps.apple.com/app/id6759990417";
 
 /* ─── Ícone Google Play ─── */
 function IconPlayStore() {
