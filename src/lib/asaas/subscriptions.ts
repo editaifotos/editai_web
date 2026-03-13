@@ -1,3 +1,4 @@
+import { getTodayBrazil } from "@/utils/date";
 import { asaasFetch } from "./client";
 
 export interface CreateSubscriptionWithCardParams {
@@ -45,8 +46,7 @@ export interface AsaasSubscriptionResponse {
 export async function createSubscriptionWithCard(
   params: CreateSubscriptionWithCardParams
 ): Promise<{ success: true; subscriptionId: string } | { success: false; error: string }> {
-  const today = new Date();
-  const nextDueDate = today.toISOString().split("T")[0];
+  const nextDueDate = getTodayBrazil();
 
   const body = {
     customer: params.customerId,

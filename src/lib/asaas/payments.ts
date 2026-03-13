@@ -1,3 +1,4 @@
+import { getTodayBrazil } from "@/utils/date";
 import { asaasFetch } from "./client";
 
 export interface CreatePaymentWithCardParams {
@@ -40,8 +41,7 @@ export interface AsaasPaymentResponse {
 export async function createPaymentWithCard(
   params: CreatePaymentWithCardParams
 ): Promise<{ success: true; paymentId: string } | { success: false; error: string }> {
-  const today = new Date();
-  const dueDate = today.toISOString().split("T")[0];
+  const dueDate = getTodayBrazil();
 
   const body = {
     customer: params.customerId,
@@ -106,8 +106,7 @@ export interface AsaasPixQrCodeResponse {
 export async function createPaymentWithPix(
   params: CreatePaymentWithPixParams
 ): Promise<{ success: true; paymentId: string } | { success: false; error: string }> {
-  const today = new Date();
-  const dueDate = today.toISOString().split("T")[0];
+  const dueDate = getTodayBrazil();
 
   const body = {
     customer: params.customerId,
