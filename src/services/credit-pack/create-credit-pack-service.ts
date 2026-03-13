@@ -27,6 +27,7 @@ export interface CreateCreditPackInput {
   email: string;
   phone: string;
   cpf: string;
+  foreignCustomer?: boolean;
   creditCard: {
     holderName: string;
     number: string;
@@ -65,7 +66,8 @@ export async function createCreditPackPayment(
   if (!isValidPhone(phone)) {
     return { success: false, error: "Telefone inválido. Informe 10 ou 11 dígitos." };
   }
-  if (!isValidCpf(cpf)) {
+  const isForeign = !!input.foreignCustomer;
+  if (!isForeign && !isValidCpf(cpf)) {
     return { success: false, error: "CPF inválido." };
   }
   if (!packId || typeof packId !== "string") {
@@ -96,7 +98,7 @@ export async function createCreditPackPayment(
     return { success: false, error: "Pacote não encontrado ou inativo." };
   }
 
-  const cpfDigits = normalizeCpf(cpf);
+  const cpfDigits = isForeign ? "" : normalizeCpf(cpf);
   const phoneDigits = normalizePhone(phone);
   const cepDigits = normalizeCep(address.postalCode);
 
@@ -106,9 +108,10 @@ export async function createCreditPackPayment(
 
   const customerParams: CreateCustomerParams = {
     name,
-    cpfCnpj: cpfDigits,
+    cpfCnpj: isForeign ? undefined : cpfDigits,
     email,
     phone: phoneDigits,
+    foreignCustomer: isForeign ? true : undefined,
   };
 
   const customerId = await getOrCreateCustomer(customerParams);
@@ -127,7 +130,7 @@ export async function createCreditPackPayment(
     creditCardHolderInfo: {
       name,
       email,
-      cpfCnpj: cpfDigits,
+      cpfCnpj: cpfDigits || undefined,
       postalCode: cepDigits,
       addressNumber: address.number.trim(),
       addressComplement: address.complement?.trim() ?? null,
@@ -150,6 +153,7 @@ export interface CreateCreditPackInputPix {
   email: string;
   phone: string;
   cpf: string;
+  foreignCustomer?: boolean;
 }
 
 export type CreateCreditPackOutputPix =
@@ -174,7 +178,8 @@ export async function createCreditPackPaymentPix(
   if (!isValidPhone(phone)) {
     return { success: false, error: "Telefone inválido. Informe 10 ou 11 dígitos." };
   }
-  if (!isValidCpf(cpf)) {
+  const isForeign = !!input.foreignCustomer;
+  if (!isForeign && !isValidCpf(cpf)) {
     return { success: false, error: "CPF inválido." };
   }
   if (!packId || typeof packId !== "string") {
@@ -186,14 +191,15 @@ export async function createCreditPackPaymentPix(
     return { success: false, error: "Pacote não encontrado ou inativo." };
   }
 
-  const cpfDigits = normalizeCpf(cpf);
+  const cpfDigits = isForeign ? "" : normalizeCpf(cpf);
   const phoneDigits = normalizePhone(phone);
 
   const customerParams: CreateCustomerParams = {
     name,
-    cpfCnpj: cpfDigits,
+    cpfCnpj: isForeign ? undefined : cpfDigits,
     email,
     phone: phoneDigits,
+    foreignCustomer: isForeign ? true : undefined,
   };
 
   const customerId = await getOrCreateCustomer(customerParams);

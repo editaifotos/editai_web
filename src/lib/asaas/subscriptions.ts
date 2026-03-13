@@ -15,7 +15,7 @@ export interface CreateSubscriptionWithCardParams {
   creditCardHolderInfo: {
     name: string;
     email: string;
-    cpfCnpj: string;
+    cpfCnpj?: string;
     postalCode: string;
     addressNumber: string;
     addressComplement?: string | null;
@@ -23,6 +23,7 @@ export interface CreateSubscriptionWithCardParams {
     mobilePhone: string;
   };
   remoteIp: string;
+  foreignCustomer?: boolean;
 }
 
 export interface AsaasSubscriptionResponse {
@@ -48,6 +49,20 @@ export async function createSubscriptionWithCard(
 ): Promise<{ success: true; subscriptionId: string } | { success: false; error: string }> {
   const nextDueDate = getTodayBrazil();
 
+  const holder = params.creditCardHolderInfo;
+  const creditCardHolderBody: Record<string, unknown> = {
+    name: holder.name.trim(),
+    email: holder.email.trim(),
+    postalCode: holder.postalCode.replace(/\D/g, ""),
+    addressNumber: holder.addressNumber.trim(),
+    addressComplement: holder.addressComplement?.trim() ?? null,
+    phone: holder.phone.replace(/\D/g, ""),
+    mobilePhone: holder.mobilePhone.replace(/\D/g, ""),
+  };
+  if (!params.foreignCustomer && holder.cpfCnpj) {
+    creditCardHolderBody.cpfCnpj = holder.cpfCnpj.replace(/\D/g, "");
+  }
+
   const body = {
     customer: params.customerId,
     billingType: "CREDIT_CARD",
@@ -66,16 +81,7 @@ export async function createSubscriptionWithCard(
       })(),
       ccv: params.creditCard.ccv.replace(/\D/g, ""),
     },
-    creditCardHolderInfo: {
-      name: params.creditCardHolderInfo.name.trim(),
-      email: params.creditCardHolderInfo.email.trim(),
-      cpfCnpj: params.creditCardHolderInfo.cpfCnpj.replace(/\D/g, ""),
-      postalCode: params.creditCardHolderInfo.postalCode.replace(/\D/g, ""),
-      addressNumber: params.creditCardHolderInfo.addressNumber.trim(),
-      addressComplement: params.creditCardHolderInfo.addressComplement?.trim() ?? null,
-      phone: params.creditCardHolderInfo.phone.replace(/\D/g, ""),
-      mobilePhone: params.creditCardHolderInfo.mobilePhone.replace(/\D/g, ""),
-    },
+    creditCardHolderInfo: creditCardHolderBody,
     remoteIp: params.remoteIp,
   };
 

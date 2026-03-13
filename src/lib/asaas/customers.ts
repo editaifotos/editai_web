@@ -3,9 +3,10 @@ import type { AsaasCustomerListResponse } from "@/types/checkout";
 
 export interface CreateCustomerParams {
   name: string;
-  cpfCnpj: string;
+  cpfCnpj?: string;
   email: string;
   phone: string;
+  foreignCustomer?: boolean;
 }
 
 export interface AsaasCustomerCreated {
@@ -41,18 +42,28 @@ export async function createCustomer(
   params: CreateCustomerParams
 ): Promise<string> {
   const phoneDigits = params.phone.replace(/\D/g, "");
-  const cpfDigits = params.cpfCnpj.replace(/\D/g, "");
+  const body: Record<string, unknown> = {
+    name: params.name.trim(),
+    email: params.email.trim(),
+    phone: phoneDigits,
+    mobilePhone: phoneDigits,
+    notificationDisabled: true,
+  };
+
+  if (params.foreignCustomer) {
+    body.foreignCustomer = true;
+    // Cliente estrangeiro: sem CPF/CNPJ conforme orientação Asaas
+  } else {
+    const cpfDigits = (params.cpfCnpj ?? "").replace(/\D/g, "");
+    if (!cpfDigits) {
+      throw new Error("CPF/CNPJ é obrigatório para clientes não estrangeiros.");
+    }
+    body.cpfCnpj = cpfDigits;
+  }
 
   const response = await asaasFetch<AsaasCustomerCreated>("/v3/customers", {
     method: "POST",
-    body: {
-      name: params.name.trim(),
-      cpfCnpj: cpfDigits,
-      email: params.email.trim(),
-      phone: phoneDigits,
-      mobilePhone: phoneDigits,
-      notificationDisabled: true,
-    },
+    body,
   });
 
   return response.id;

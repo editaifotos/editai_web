@@ -6,7 +6,8 @@ type CreateBody = {
   name: string;
   email: string;
   phone: string;
-  cpf: string;
+  cpf?: string;
+  foreignCustomer?: boolean;
   creditCard: {
     holderName: string;
     number: string;
@@ -39,7 +40,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Body inválido." }, { status: 400 });
   }
 
-  const { planId, name, email, phone, cpf, creditCard, address } = body;
+  const { planId, name, email, phone, cpf, foreignCustomer, creditCard, address } = body;
+  const isForeign = !!foreignCustomer;
 
   if (!planId || typeof planId !== "string") {
     return NextResponse.json(
@@ -56,7 +58,7 @@ export async function POST(request: NextRequest) {
   if (!phone || typeof phone !== "string") {
     return NextResponse.json({ error: "phone é obrigatório." }, { status: 400 });
   }
-  if (!cpf || typeof cpf !== "string") {
+  if (!isForeign && (!cpf || typeof cpf !== "string")) {
     return NextResponse.json({ error: "cpf é obrigatório." }, { status: 400 });
   }
   if (!creditCard || typeof creditCard !== "object") {
@@ -88,7 +90,8 @@ export async function POST(request: NextRequest) {
       name,
       email,
       phone,
-      cpf,
+      cpf: cpf ?? "",
+      foreignCustomer: isForeign,
       creditCard: {
         holderName: creditCard.holderName ?? "",
         number: creditCard.number ?? "",

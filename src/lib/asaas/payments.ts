@@ -15,7 +15,7 @@ export interface CreatePaymentWithCardParams {
   creditCardHolderInfo: {
     name: string;
     email: string;
-    cpfCnpj: string;
+    cpfCnpj?: string;
     postalCode: string;
     addressNumber: string;
     addressComplement?: string | null;
@@ -60,16 +60,20 @@ export async function createPaymentWithCard(
       })(),
       ccv: params.creditCard.ccv.replace(/\D/g, ""),
     },
-    creditCardHolderInfo: {
-      name: params.creditCardHolderInfo.name.trim(),
-      email: params.creditCardHolderInfo.email.trim(),
-      cpfCnpj: params.creditCardHolderInfo.cpfCnpj.replace(/\D/g, ""),
-      postalCode: params.creditCardHolderInfo.postalCode.replace(/\D/g, ""),
-      addressNumber: params.creditCardHolderInfo.addressNumber.trim(),
-      addressComplement: params.creditCardHolderInfo.addressComplement?.trim() ?? null,
-      phone: params.creditCardHolderInfo.phone.replace(/\D/g, ""),
-      mobilePhone: params.creditCardHolderInfo.mobilePhone.replace(/\D/g, ""),
-    },
+    creditCardHolderInfo: Object.assign(
+      {
+        name: params.creditCardHolderInfo.name.trim(),
+        email: params.creditCardHolderInfo.email.trim(),
+        postalCode: params.creditCardHolderInfo.postalCode.replace(/\D/g, ""),
+        addressNumber: params.creditCardHolderInfo.addressNumber.trim(),
+        addressComplement: params.creditCardHolderInfo.addressComplement?.trim() ?? null,
+        phone: params.creditCardHolderInfo.phone.replace(/\D/g, ""),
+        mobilePhone: params.creditCardHolderInfo.mobilePhone.replace(/\D/g, ""),
+      },
+      params.creditCardHolderInfo.cpfCnpj
+        ? { cpfCnpj: params.creditCardHolderInfo.cpfCnpj.replace(/\D/g, "") }
+        : {}
+    ),
     remoteIp: params.remoteIp,
   };
 

@@ -73,6 +73,7 @@ function CreditPackForm() {
   const [postalCode, setPostalCode] = useState("");
   const [addressNumber, setAddressNumber] = useState("");
   const [addressComplement, setAddressComplement] = useState("");
+  const [foreignCustomer, setForeignCustomer] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -131,6 +132,7 @@ function CreditPackForm() {
         email: email.trim(),
         phone: phone.replace(/\D/g, ""),
         cpf: cpf.replace(/\D/g, ""),
+        foreignCustomer,
       };
 
       if (paymentMethod === "CREDIT_CARD") {
@@ -424,10 +426,24 @@ function CreditPackForm() {
                   type="text"
                   placeholder="000.000.000-00"
                   autoComplete="off"
-                  required
+                  required={!foreignCustomer}
+                  disabled={foreignCustomer}
                   value={cpf}
                   onChange={(e) => setCpf(maskCpf(e.target.value))}
                 />
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  id="foreignCustomer"
+                  name="foreignCustomer"
+                  type="checkbox"
+                  checked={foreignCustomer}
+                  onChange={(e) => setForeignCustomer(e.target.checked)}
+                  className="size-4 rounded border-default"
+                />
+                <Label htmlFor="foreignCustomer" className="cursor-pointer text-sm font-normal">
+                  Cliente estrangeiro?
+                </Label>
               </div>
             </div>
 

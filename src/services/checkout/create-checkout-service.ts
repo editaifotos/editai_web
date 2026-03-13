@@ -24,6 +24,7 @@ export interface CreateCheckoutInput {
   email: string;
   phone: string;
   cpf: string;
+  foreignCustomer?: boolean;
   creditCard: {
     holderName: string;
     number: string;
@@ -69,7 +70,8 @@ export async function createCheckout(
   if (!isValidPhone(phone)) {
     return { success: false, error: "Telefone inválido. Informe 10 ou 11 dígitos." };
   }
-  if (!isValidCpf(cpf)) {
+  const isForeign = !!input.foreignCustomer;
+  if (!isForeign && !isValidCpf(cpf)) {
     return { success: false, error: "CPF inválido." };
   }
   if (!planId || typeof planId !== "string") {
@@ -100,7 +102,7 @@ export async function createCheckout(
     return { success: false, error: "Plano não encontrado ou inativo." };
   }
 
-  const cpfDigits = normalizeCpf(cpf);
+  const cpfDigits = isForeign ? "" : normalizeCpf(cpf);
   const phoneDigits = normalizePhone(phone);
   const cepDigits = normalizeCep(address.postalCode);
 
@@ -110,9 +112,10 @@ export async function createCheckout(
 
   const customerParams: CreateCustomerParams = {
     name,
-    cpfCnpj: cpfDigits,
+    cpfCnpj: isForeign ? undefined : cpfDigits,
     email,
     phone: phoneDigits,
+    foreignCustomer: isForeign ? true : undefined,
   };
 
   const customerId = await getOrCreateCustomer(customerParams);
@@ -121,6 +124,7 @@ export async function createCheckout(
     customerId,
     value: plan.value,
     description: plan.name,
+    foreignCustomer: isForeign,
     creditCard: {
       holderName: card.holderName.trim(),
       number: card.number.replace(/\D/g, ""),
@@ -131,7 +135,7 @@ export async function createCheckout(
     creditCardHolderInfo: {
       name,
       email,
-      cpfCnpj: cpfDigits,
+      cpfCnpj: cpfDigits || undefined,
       postalCode: cepDigits,
       addressNumber: address.number.trim(),
       addressComplement: address.complement?.trim() ?? null,

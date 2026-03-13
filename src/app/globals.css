@@ -129,79 +129,59 @@
    Variáveis CSS adaptativas — Modo Escuro
 ───────────────────────────────────────────────────────────── */
 .dark {
-  /* Apple HIG: #1C1C1E, #2C2C2E, #3A3A3C — cinzas mais claros que preto puro */
-  --canvas:    #1c1c1e;
-  --canvas-2:  #2c2c2e;
-  --surface:   #2c2c2e;
-  --surface-2: #3a3a3c;
+  /* Azul escuro (slate) — restaurado do commit anterior ao Painel admin */
+  --canvas:    #0f172a;
+  --canvas-2:  #1e293b;
+  --surface:   #1e293b;
+  --surface-2: #273449;
 
-  --ink:       #f5f5f7;
-  --ink-muted: #98989f;
-  --ink-faint: #636366;
+  --ink:       #f1f5f9;
+  --ink-muted: #94a3b8;
+  --ink-faint: #64748b;
 
-  --stroke:    #48484a;
+  --stroke:    #334155;
 
-  --background: #1c1c1e;
+  --background: #0f172a;
+  --foreground: #f1f5f9;
 
-  --foreground: #f5f5f7;
+  --card: #1e293b;
+  --card-foreground: #f1f5f9;
 
-  --card: #2c2c2e;
+  --popover: #1e293b;
+  --popover-foreground: #f1f5f9;
 
-  --card-foreground: #f5f5f7;
+  --primary: #f1f5f9;
+  --primary-foreground: #0f172a;
 
-  --popover: #2c2c2e;
+  --secondary: #273449;
+  --secondary-foreground: #f1f5f9;
 
-  --popover-foreground: #f5f5f7;
+  --muted: #273449;
+  --muted-foreground: #94a3b8;
 
-  --primary: #f5f5f7;
-
-  --primary-foreground: #1c1c1e;
-
-  --secondary: #3a3a3c;
-
-  --secondary-foreground: #f5f5f7;
-
-  --muted: #3a3a3c;
-
-  --muted-foreground: #98989f;
-
-  --accent: #3a3a3c;
-
-  --accent-foreground: #f5f5f7;
+  --accent: #273449;
+  --accent-foreground: #f1f5f9;
 
   --destructive: oklch(0.704 0.191 22.216);
 
-  --border: oklch(1 0 0 / 12%);
-
-  --input: oklch(1 0 0 / 18%);
-
-  --ring: oklch(0.65 0 0);
+  --border: #334155;
+  --input: #334155;
+  --ring: #94a3b8;
 
   --chart-1: oklch(0.809 0.105 251.813);
-
   --chart-2: oklch(0.623 0.214 259.815);
-
   --chart-3: oklch(0.546 0.245 262.881);
-
   --chart-4: oklch(0.488 0.243 264.376);
-
   --chart-5: oklch(0.424 0.199 265.638);
 
-  --sidebar: #2c2c2e;
-
-  --sidebar-foreground: #f5f5f7;
-
-  --sidebar-primary: #2c2c2e;
-
-  --sidebar-primary-foreground: #f5f5f7;
-
-  --sidebar-accent: #3a3a3c;
-
-  --sidebar-accent-foreground: #f5f5f7;
-
-  --sidebar-border: oklch(1 0 0 / 10%);
-
-  --sidebar-ring: oklch(0.65 0 0);
+  --sidebar: #1e293b;
+  --sidebar-foreground: #f1f5f9;
+  --sidebar-primary: #1e293b;
+  --sidebar-primary-foreground: #f1f5f9;
+  --sidebar-accent: #273449;
+  --sidebar-accent-foreground: #f1f5f9;
+  --sidebar-border: #334155;
+  --sidebar-ring: #94a3b8;
 }
 
 /* ─────────────────────────────────────────────────────────────
