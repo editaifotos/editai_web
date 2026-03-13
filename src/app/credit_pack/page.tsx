@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import {
   maskCpf,
@@ -377,45 +378,57 @@ function CreditPackForm() {
               <p className="text-sm font-medium text-secondary">
                 Dados pessoais
               </p>
-              <Input
-                name="name"
-                label="Nome completo"
-                placeholder="Seu nome"
-                autoComplete="name"
-                required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-              <Input
-                name="email"
-                type="email"
-                label="E-mail"
-                placeholder="voce@exemplo.com"
-                autoComplete="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <Input
-                name="phone"
-                type="tel"
-                label="Telefone"
-                placeholder="(00) 00000-0000"
-                autoComplete="tel"
-                required
-                value={phone}
-                onChange={(e) => setPhone(maskPhone(e.target.value))}
-              />
-              <Input
-                name="cpf"
-                type="text"
-                label="CPF"
-                placeholder="000.000.000-00"
-                autoComplete="off"
-                required
-                value={cpf}
-                onChange={(e) => setCpf(maskCpf(e.target.value))}
-              />
+              <div className="space-y-2">
+                <Label htmlFor="name">Nome completo</Label>
+                <Input
+                  id="name"
+                  name="name"
+                  placeholder="Seu nome"
+                  autoComplete="name"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">E-mail</Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="voce@exemplo.com"
+                  autoComplete="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Telefone</Label>
+                <Input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  placeholder="(00) 00000-0000"
+                  autoComplete="tel"
+                  required
+                  value={phone}
+                  onChange={(e) => setPhone(maskPhone(e.target.value))}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="cpf">CPF</Label>
+                <Input
+                  id="cpf"
+                  name="cpf"
+                  type="text"
+                  placeholder="000.000.000-00"
+                  autoComplete="off"
+                  required
+                  value={cpf}
+                  onChange={(e) => setCpf(maskCpf(e.target.value))}
+                />
+              </div>
             </div>
 
             {paymentMethod === "CREDIT_CARD" && (
@@ -424,50 +437,66 @@ function CreditPackForm() {
               <p className="text-sm font-medium text-secondary">
                 Dados do cartão
               </p>
-              <Input
-                name="cardNumber"
-                type="text"
-                label="Número do cartão"
-                placeholder="0000 0000 0000 0000"
-                autoComplete="cc-number"
-                required
-                value={cardNumber}
-                onChange={(e) => setCardNumber(maskCardNumber(e.target.value))}
-              />
-              <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="cardNumber">Número do cartão</Label>
                 <Input
-                  name="cardExpiry"
+                  id="cardNumber"
+                  name="cardNumber"
                   type="text"
-                  label="Validade (MM/AA)"
-                  placeholder="MM/AA"
-                  autoComplete="cc-exp"
+                  placeholder="0000 0000 0000 0000"
+                  autoComplete="cc-number"
                   required
-                  value={cardExpiry}
-                  onChange={(e) => setCardExpiry(maskCardExpiry(e.target.value))}
-                />
-                <Input
-                  name="cardCvv"
-                  type="text"
-                  label="CVV"
-                  placeholder="123"
-                  autoComplete="cc-csc"
-                  required
-                  value={cardCvv}
-                  onChange={(e) =>
-                    setCardCvv(e.target.value.replace(/\D/g, "").slice(0, 4))
-                  }
+                  value={cardNumber}
+                  onChange={(e) => setCardNumber(maskCardNumber(e.target.value))}
                 />
               </div>
-              <Input
-                name="cardHolderName"
-                type="text"
-                label="Nome no cartão"
-                placeholder="Como está impresso no cartão"
-                autoComplete="cc-name"
-                required
-                value={cardHolderName}
-                onChange={(e) => setCardHolderName(e.target.value)}
-              />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="cardExpiry">Validade (MM/AA)</Label>
+                  <Input
+                    id="cardExpiry"
+                    name="cardExpiry"
+                    type="text"
+                    placeholder="MM/AA"
+                    autoComplete="cc-exp"
+                    required
+                    value={cardExpiry}
+                    onChange={(e) =>
+                      setCardExpiry(maskCardExpiry(e.target.value))
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="cardCvv">CVV</Label>
+                  <Input
+                    id="cardCvv"
+                    name="cardCvv"
+                    type="text"
+                    placeholder="123"
+                    autoComplete="cc-csc"
+                    required
+                    value={cardCvv}
+                    onChange={(e) =>
+                      setCardCvv(
+                        e.target.value.replace(/\D/g, "").slice(0, 4)
+                      )
+                    }
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="cardHolderName">Nome no cartão</Label>
+                <Input
+                  id="cardHolderName"
+                  name="cardHolderName"
+                  type="text"
+                  placeholder="Como está impresso no cartão"
+                  autoComplete="cc-name"
+                  required
+                  value={cardHolderName}
+                  onChange={(e) => setCardHolderName(e.target.value)}
+                />
+              </div>
             </div>
 
             <div className="space-y-4 border-t border-default pt-5">
@@ -475,11 +504,12 @@ function CreditPackForm() {
                 Endereço (titular do cartão)
               </p>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                <div className="sm:col-span-2">
+                <div className="space-y-2 sm:col-span-2">
+                  <Label htmlFor="postalCode">CEP</Label>
                   <Input
+                    id="postalCode"
                     name="postalCode"
                     type="text"
-                    label="CEP"
                     placeholder="00000-000"
                     autoComplete="postal-code"
                     required
@@ -487,26 +517,32 @@ function CreditPackForm() {
                     onChange={(e) => setPostalCode(maskCep(e.target.value))}
                   />
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="addressNumber">Número</Label>
+                  <Input
+                    id="addressNumber"
+                    name="addressNumber"
+                    type="text"
+                    placeholder="123"
+                    autoComplete="street-address"
+                    required
+                    value={addressNumber}
+                    onChange={(e) => setAddressNumber(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="addressComplement">Complemento (opcional)</Label>
                 <Input
-                  name="addressNumber"
+                  id="addressComplement"
+                  name="addressComplement"
                   type="text"
-                  label="Número"
-                  placeholder="123"
-                  autoComplete="street-address"
-                  required
-                  value={addressNumber}
-                  onChange={(e) => setAddressNumber(e.target.value)}
+                  placeholder="Apto, bloco..."
+                  autoComplete="off"
+                  value={addressComplement}
+                  onChange={(e) => setAddressComplement(e.target.value)}
                 />
               </div>
-              <Input
-                name="addressComplement"
-                type="text"
-                label="Complemento (opcional)"
-                placeholder="Apto, bloco..."
-                autoComplete="off"
-                value={addressComplement}
-                onChange={(e) => setAddressComplement(e.target.value)}
-              />
             </div>
               </>
             )}
