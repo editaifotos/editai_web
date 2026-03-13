@@ -4,8 +4,18 @@ import { usePathname } from "next/navigation";
 import { Navbar } from "./navbar";
 import { Footer } from "./footer";
 
-export function ConditionalLayout({ children }: { children: React.ReactNode }) {
+/**
+ * Renderiza Navbar e Footer condicionalmente.
+ * Não renderiza para rotas /admin (painel administrativo).
+ * Layout mínimo para checkout.
+ */
+export function ConditionalLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const pathname = usePathname();
+  const isAdminPage = pathname?.startsWith("/admin");
   const isCheckout =
     pathname?.startsWith("/checkout") || pathname?.startsWith("/credit_pack");
 
@@ -15,6 +25,10 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
         <main className="flex-1">{children}</main>
       </div>
     );
+  }
+
+  if (isAdminPage) {
+    return <>{children}</>;
   }
 
   return (

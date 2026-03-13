@@ -2,8 +2,8 @@ import type { ReactNode } from "react";
 import { Space_Grotesk, Geist } from "next/font/google";
 import "@/app/globals.css";
 import { ThemeProvider } from "@/components/layout/theme-provider";
-import { Navbar } from "@/components/layout/navbar";
-import { Footer } from "@/components/layout/footer";
+import { ConditionalLayout } from "@/components/layout/conditional-layout";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
@@ -31,14 +31,16 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html
       lang="pt-BR"
       suppressHydrationWarning
-      className={cn("font-sans", geist.variable)}
+      className={cn("font-sans", geist.variable, spaceGrotesk.variable)}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body className="antialiased">
         <ThemeProvider>
-          <ConditionalLayout>{children}</ConditionalLayout>
+          <TooltipProvider>
+            <ConditionalLayout>{children}</ConditionalLayout>
+          </TooltipProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -76,7 +76,7 @@ export function Navbar() {
               </Link>
             ))}
             <Link href="/criar_conta" onClick={() => setOpen(false)}>
-              <Button size="md" className="mt-1 w-full">Criar conta</Button>
+              <Button size="default" className="mt-1 w-full">Criar conta</Button>
             </Link>
           </Container>
         </div>

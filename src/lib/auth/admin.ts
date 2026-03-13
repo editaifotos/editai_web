@@ -1,5 +1,9 @@
+import { cache } from "react";
 import { redirect } from "next/navigation";
-import { createSupabaseServerClient } from "@/lib/supabase/client-server";
+import {
+  createSupabaseServerClient,
+  createSupabaseServerClientReadOnly,
+} from "@/lib/supabase/client-server";
 import { getSupabaseAdminClient } from "@/lib/supabase/client-admin";
 
 /**
@@ -20,6 +24,7 @@ export async function isEmailWhitelisted(email: string): Promise<boolean> {
 /**
  * Verifica se o usuário atual é um administrador autorizado.
  * Condições: role=admin E email na whitelist.
+ * Usa cliente completo (Server Action).
  */
 export async function isAdmin(): Promise<boolean> {
   const supabase = await createSupabaseServerClient();
@@ -57,9 +62,10 @@ export interface AdminUser {
 /**
  * Obtém o usuário admin atual.
  * Retorna null se não autenticado, não for admin ou não estiver na whitelist.
+ * Usa cliente read-only (Server Component).
  */
 export async function getAdminUser(): Promise<AdminUser | null> {
-  const supabase = await createSupabaseServerClient();
+  const supabase = await createSupabaseServerClientReadOnly();
   const {
     data: { user },
     error: authError,
@@ -97,22 +103,32 @@ export async function getAdminUser(): Promise<AdminUser | null> {
 /**
  * Protege uma rota admin.
  * Redireciona para /admin/login se não for admin autorizado.
+ * Usa cliente read-only (Server Component).
  */
 export async function requireAdmin(): Promise<void> {
-  const supabase = await createSupabaseServerClient();
+  await requireAdminAndGetUser();
+}
+
+/**
+ * Protege rota admin E retorna o usuário em uma única passada.
+ * Evita chamadas duplicadas (requireAdmin + getAdminUser).
+ * Cacheado por request com React.cache.
+ */
+export const requireAdminAndGetUser = cache(async (): Promise<AdminUser> => {
+  const supabase = await createSupabaseServerClientReadOnly();
   const {
     data: { user },
     error: authError,
   } = await supabase.auth.getUser();
 
-  if (authError || !user) {
+  if (authError || !user?.email) {
     redirect("/admin/login");
   }
 
   const admin = getSupabaseAdminClient();
   const { data: userData, error } = await admin
     .from("users")
-    .select("role, email")
+    .select("role, email, name, avatar_url")
     .eq("id", user.id)
     .single();
 
@@ -130,4 +146,12 @@ export async function requireAdmin(): Promise<void> {
   if (!whitelisted) {
     redirect("/admin/login?error=not_whitelisted");
   }
-}
+
+  return {
+    id: user.id,
+    email: user.email,
+    name: userData.name ?? null,
+    avatarUrl: userData.avatar_url ?? null,
+    isAdmin: true,
+  };
+});

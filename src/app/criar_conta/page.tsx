@@ -162,35 +162,44 @@ function CriarContaForm() {
       )}
 
       <form className="mt-6 space-y-5" onSubmit={handleSubmit} noValidate>
-        <Input
-          name="nome"
-          label="Nome completo"
-          placeholder="Seu nome"
-          autoComplete="name"
-          required
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-        <Input
-          name="email"
-          type="email"
-          label="E-mail"
-          placeholder="voce@exemplo.com"
-          autoComplete="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <Input
-          name="senha"
-          type="password"
-          label="Senha"
-          placeholder="Mínimo 6 caracteres"
-          autoComplete="new-password"
-          required
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <div className="space-y-2">
+          <label htmlFor="nome" className="text-sm font-medium">Nome completo</label>
+          <Input
+            id="nome"
+            name="nome"
+            placeholder="Seu nome"
+            autoComplete="name"
+            required
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </div>
+        <div className="space-y-2">
+          <label htmlFor="email" className="text-sm font-medium">E-mail</label>
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="voce@exemplo.com"
+            autoComplete="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+        <div className="space-y-2">
+          <label htmlFor="senha" className="text-sm font-medium">Senha</label>
+          <Input
+            id="senha"
+            name="senha"
+            type="password"
+            placeholder="Mínimo 6 caracteres"
+            autoComplete="new-password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
 
         {/* Erro do formulário */}
         {formError && (
