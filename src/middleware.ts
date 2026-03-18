@@ -5,6 +5,15 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 export async function middleware(request: NextRequest) {
+  // Supabase às vezes redireciona para /?code=... em vez de /reset-password?code=...
+  // Redirecionar para a página correta
+  const url = request.nextUrl;
+  if (url.pathname === "/" && url.searchParams.has("code")) {
+    return NextResponse.redirect(
+      new URL(`/reset-password?${url.searchParams.toString()}`, url.origin)
+    );
+  }
+
   const response = NextResponse.next({
     request,
   });
@@ -35,5 +44,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/", "/admin/:path*"],
 };
