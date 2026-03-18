@@ -28,10 +28,32 @@ function ResetPasswordForm() {
     async function initSession() {
       const supabase = getSupabaseBrowserClient();
 
-      // 1. initialize() processa a URL (PKCE ou implícito) e restaura sessão
+      // 1. initialize() processa a URL (PKCE ou implícito)
       await supabase.auth.initialize();
 
-      // 2. Se há code na query (PKCE) e initialize não resolveu, trocar manualmente
+      // 2. Se há tokens no hash (fluxo implícito - reset iniciado no app)
+      if (typeof window !== "undefined" && window.location.hash) {
+        const hash = window.location.hash.slice(1);
+        const params = new URLSearchParams(hash);
+        const accessToken = params.get("access_token");
+        const refreshToken = params.get("refresh_token");
+        if (accessToken && refreshToken) {
+          const { error } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          });
+          if (!cancelled && error) {
+            setState("invalid");
+            return;
+          }
+          // Limpar o hash da URL após processar
+          if (!cancelled) {
+            window.history.replaceState(null, "", window.location.pathname + window.location.search);
+          }
+        }
+      }
+
+      // 3. Se há code na query (PKCE) e ainda não tem sessão
       if (code) {
         const { data } = await supabase.auth.getSession();
         if (!data.session) {
@@ -45,7 +67,7 @@ function ResetPasswordForm() {
         }
       }
 
-      // 3. Verificar sessão final
+      // 4. Verificar sessão final
       const { data } = await supabase.auth.getSession();
       if (!cancelled) {
         setState(data.session ? "ready" : "invalid");
