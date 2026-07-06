@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { getSupabaseAdminClient } from "@/lib/supabase/client-admin";
+import { fetchUserEditsAdmin } from "@/app/admin/users/actions";
 import { UserProfileForm } from "@/components/admin/UserProfileForm";
 
 export default async function AdminUserProfilePage({
@@ -13,7 +14,7 @@ export default async function AdminUserProfilePage({
   const { userId } = await params;
   const admin = getSupabaseAdminClient();
 
-  const [userResult, subscriptionResult, plansResult, editStatsResult, recentEditsResult] =
+  const [userResult, subscriptionResult, plansResult, editStatsResult, initialEditsPage] =
     await Promise.all([
       admin
         .from("users")
@@ -31,14 +32,7 @@ export default async function AdminUserProfilePage({
         .maybeSingle(),
       admin.from("plans").select("id, name").eq("is_active", true),
       admin.rpc("get_user_edit_stats", { p_user_id: userId }),
-      admin
-        .from("edits")
-        .select(
-          "id, operation_type, status, created_at, prompt_text_original, prompt_text, image_url, edit_category, edit_goal, credits_used"
-        )
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false })
-        .limit(20),
+      fetchUserEditsAdmin(userId, 1),
     ]);
 
   const { data: user, error } = userResult;
@@ -50,7 +44,6 @@ export default async function AdminUserProfilePage({
   const { data: subscription } = subscriptionResult;
   const { data: plans } = plansResult;
   const { data: editStats } = editStatsResult;
-  const { data: recentEdits } = recentEditsResult ?? { data: [] };
 
   const { data: plan } = user.current_plan_id
     ? await admin.from("plans").select("id, name").eq("id", user.current_plan_id).single()
@@ -75,7 +68,7 @@ export default async function AdminUserProfilePage({
         plan={plan}
         plans={plans ?? []}
         editStats={editStats ?? null}
-        recentEdits={recentEdits ?? []}
+        initialEditsPage={initialEditsPage}
       />
     </div>
   );

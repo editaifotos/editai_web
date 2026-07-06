@@ -9,47 +9,29 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
   updateUser,
   updateUserPlan,
   updateUserStatusFromForm,
   resetUserPassword,
 } from "@/app/admin/users/actions";
+import { ADMIN_DEFAULT_RESET_PASSWORD } from "@/config/admin";
 import {
-  EditDetailSheet,
-  type RecentEdit,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  OPERATION_LABELS,
+  CATEGORY_LABELS,
+  GOAL_LABELS,
 } from "@/components/admin/EditDetailSheet";
-
-const OPERATION_LABELS: Record<string, string> = {
-  text_to_image: "Texto para Imagem",
-  edit_image: "Editar Imagem",
-  edit_model: "Editar com Modelo",
-  remove_background: "Remover Fundo",
-  multi_image: "Múltiplas Imagens",
-};
-
-const CATEGORY_LABELS: Record<string, string> = {
-  food: "Comida",
-  person: "Pessoa",
-  landscape: "Paisagem",
-  product: "Produto",
-  other: "Outro",
-};
-
-const GOAL_LABELS: Record<string, string> = {
-  improve_colors: "Melhorar cores",
-  change_background: "Mudar fundo",
-  remove_objects: "Remover objetos",
-  enhance_details: "Detalhar",
-  adjust_lighting: "Ajustar iluminação",
-};
+import { UserEditsTable } from "@/components/admin/UserEditsTable";
+import type { UserEditsPage } from "@/lib/admin/user-edits";
 
 export type EditStats = {
   total: number;
@@ -91,19 +73,43 @@ export function UserProfileForm({
   plan,
   plans,
   editStats,
-  recentEdits,
+  initialEditsPage,
 }: {
   user: User;
   subscription: Subscription;
   plan: Plan;
   plans: { id: string; name: string }[];
   editStats: EditStats | null;
-  recentEdits: RecentEdit[];
+  initialEditsPage: UserEditsPage;
 }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [selectedEdit, setSelectedEdit] = useState<RecentEdit | null>(null);
-  const [detailOpen, setDetailOpen] = useState(false);
+  const [resetDialogOpen, setResetDialogOpen] = useState(false);
+  const [resetMessage, setResetMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
+
+  const handleResetPassword = () => {
+    startTransition(async () => {
+      const result = await resetUserPassword(user.id);
+      setResetDialogOpen(false);
+
+      if (result.success) {
+        setResetMessage({
+          type: "success",
+          text: `Senha redefinida com sucesso. Informe ao cliente a nova senha: ${result.password}`,
+        });
+      } else {
+        setResetMessage({
+          type: "error",
+          text: result.error || "Não foi possível redefinir a senha.",
+        });
+      }
+
+      router.refresh();
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -282,68 +288,10 @@ export function UserProfileForm({
                 )}
             </div>
 
-            {recentEdits.length > 0 && (
-              <div>
-                <p className="text-sm font-medium text-muted-foreground mb-2">
-                  Últimas edições
-                </p>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Tipo</TableHead>
-                      <TableHead>Data</TableHead>
-                      <TableHead>Status</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {recentEdits.map((edit) => (
-                      <TableRow
-                        key={edit.id}
-                        className="cursor-pointer hover:bg-muted/50"
-                        onClick={() => {
-                          setSelectedEdit(edit);
-                          setDetailOpen(true);
-                        }}
-                      >
-                        <TableCell>
-                          {OPERATION_LABELS[edit.operation_type ?? ""] ??
-                            edit.operation_type ??
-                            "—"}
-                        </TableCell>
-                        <TableCell>
-                          {new Date(edit.created_at).toLocaleString("pt-BR", {
-                            dateStyle: "short",
-                            timeStyle: "short",
-                          })}
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            variant={
-                              edit.status === "completed"
-                                ? "default"
-                                : edit.status === "failed"
-                                  ? "destructive"
-                                  : "secondary"
-                            }
-                          >
-                            {edit.status ?? "—"}
-                          </Badge>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            )}
+            <UserEditsTable userId={user.id} initialPage={initialEditsPage} />
           </CardContent>
         </Card>
       )}
-
-      <EditDetailSheet
-        edit={selectedEdit}
-        open={detailOpen}
-        onOpenChange={setDetailOpen}
-      />
 
       <Card>
         <CardHeader>
@@ -421,21 +369,76 @@ export function UserProfileForm({
         <CardHeader>
           <CardTitle>Redefinir senha</CardTitle>
           <p className="text-sm text-muted-foreground">
-            Envia um email de redefinição para o usuário
+            Define uma senha temporária padrão para o usuário acessar a conta
+            novamente.
           </p>
         </CardHeader>
-        <CardContent>
-          <form
-            action={() => {
-              startTransition(() => {
-                resetUserPassword(user.id).then(() => router.refresh());
-              });
-            }}
+        <CardContent className="space-y-4">
+          <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 px-4 py-3 text-sm text-muted-foreground space-y-2">
+            <p className="font-medium text-foreground">Instruções para o admin</p>
+            <ol className="list-decimal list-inside space-y-1">
+              <li>
+                Ao confirmar, a senha será alterada para{" "}
+                <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-foreground">
+                  {ADMIN_DEFAULT_RESET_PASSWORD}
+                </code>
+                .
+              </li>
+              <li>
+                Comunique essa senha ao cliente por um canal seguro (WhatsApp,
+                email ou telefone).
+              </li>
+              <li>
+                Oriente o cliente a trocar a senha após o primeiro acesso, se
+                possível.
+              </li>
+            </ol>
+          </div>
+
+          {resetMessage && (
+            <p
+              className={
+                resetMessage.type === "success"
+                  ? "rounded-xl border border-green-500/30 bg-green-500/5 px-4 py-2.5 text-sm text-green-700 dark:text-green-400"
+                  : "rounded-xl border border-error/30 bg-error/5 px-4 py-2.5 text-sm text-error"
+              }
+            >
+              {resetMessage.text}
+            </p>
+          )}
+
+          <Button
+            type="button"
+            variant="outline"
+            disabled={isPending}
+            onClick={() => setResetDialogOpen(true)}
           >
-            <Button type="submit" variant="outline" disabled={isPending}>
-              Enviar email de redefinição
-            </Button>
-          </form>
+            Redefinir senha para padrão
+          </Button>
+
+          <AlertDialog open={resetDialogOpen} onOpenChange={setResetDialogOpen}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Redefinir senha do usuário?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  A senha de{" "}
+                  <strong>{user.email || user.name || "este usuário"}</strong>{" "}
+                  será alterada para{" "}
+                  <strong>{ADMIN_DEFAULT_RESET_PASSWORD}</strong>. Depois,
+                  informe essa senha ao cliente para que ele consiga entrar.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel disabled={isPending}>Cancelar</AlertDialogCancel>
+                <AlertDialogAction
+                  disabled={isPending}
+                  onClick={handleResetPassword}
+                >
+                  {isPending ? "Redefinindo..." : "Confirmar redefinição"}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </CardContent>
       </Card>
     </div>

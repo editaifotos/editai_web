@@ -1,36 +1,35 @@
 import { UsersTable } from "@/components/admin/UsersTable";
+import { fetchUsersAdminList } from "@/app/admin/users/actions";
 import { getSupabaseAdminClient } from "@/lib/supabase/client-admin";
 
-export default async function AdminUsersPage() {
-  const admin = getSupabaseAdminClient();
+type PageProps = { searchParams: Promise<{ plan?: string }> };
 
-  const { data: usersData } = await admin
-    .from("users")
-    .select("id, name, email, role, subscription_status, credits_balance, created_at, current_plan_id")
-    .order("created_at", { ascending: false })
-    .limit(50);
+export default async function AdminUsersPage({ searchParams }: PageProps) {
+  const { plan: planId } = await searchParams;
+  const users = await fetchUsersAdminList(undefined, planId);
 
-  const planIds = [...new Set((usersData ?? []).map((u) => u.current_plan_id).filter(Boolean))];
-  const { data: plansData } =
-    planIds.length > 0
-      ? await admin.from("plans").select("id, name").in("id", planIds as string[])
-      : { data: [] };
-
-  const plansMap = new Map((plansData ?? []).map((p) => [p.id, p.name]));
-  const users = (usersData ?? []).map((u) => ({
-    ...u,
-    plans: u.current_plan_id ? { name: plansMap.get(u.current_plan_id) ?? "—" } : null,
-  }));
+  let planName: string | null = null;
+  if (planId) {
+    const admin = getSupabaseAdminClient();
+    const { data: plan } = await admin
+      .from("plans")
+      .select("name")
+      .eq("id", planId)
+      .maybeSingle();
+    planName = plan?.name ?? null;
+  }
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Usuários</h1>
         <p className="text-muted-foreground">
-          Gerencie os usuários do sistema
+          {planName
+            ? `Filtrando pelo plano ${planName}`
+            : "Gerencie os usuários do sistema"}
         </p>
       </div>
-      <UsersTable users={users ?? []} />
+      <UsersTable users={users ?? []} planFilterId={planId} planFilterName={planName} />
     </div>
   );
 }

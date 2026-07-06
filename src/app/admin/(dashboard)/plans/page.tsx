@@ -4,20 +4,24 @@ import { getSupabaseAdminClient } from "@/lib/supabase/client-admin";
 export default async function AdminPlansPage() {
   const admin = getSupabaseAdminClient();
 
-  const [{ data: plans }, { data: subscriptions }] = await Promise.all([
+  const [{ data: plans }, { data: users }] = await Promise.all([
     admin
       .from("plans")
-      .select("id, name, monthly_price, yearly_price, is_active")
+      .select(
+        "id, name, description, price, monthly_price, yearly_price, duration_months, is_active, add_credit, credit_referral, max_stored_photos, photo_expiration_days, credit_expiration_days, link_payment, created_at"
+      )
+      .order("is_active", { ascending: false })
       .order("name"),
-    admin
-      .from("subscriptions")
-      .select("id, user_id, plan_id, status")
-      .eq("status", "active"),
+    admin.from("users").select("current_plan_id"),
   ]);
 
   const planUserCounts = new Map<string, number>();
-  for (const s of subscriptions ?? []) {
-    planUserCounts.set(s.plan_id, (planUserCounts.get(s.plan_id) ?? 0) + 1);
+  for (const user of users ?? []) {
+    if (!user.current_plan_id) continue;
+    planUserCounts.set(
+      user.current_plan_id,
+      (planUserCounts.get(user.current_plan_id) ?? 0) + 1
+    );
   }
 
   return (

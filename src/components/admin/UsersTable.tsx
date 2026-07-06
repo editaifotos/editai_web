@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Table,
@@ -13,30 +13,47 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Search, ChevronRight } from "lucide-react";
+import { Search, ChevronRight, Loader2 } from "lucide-react";
+import {
+  fetchUsersAdminList,
+} from "@/app/admin/users/actions";
+import type { AdminUserRow } from "@/lib/admin/users";
 
-type UserRow = {
-  id: string;
-  name: string | null;
-  email: string | null;
-  role: string;
-  subscription_status: string;
-  credits_balance: number;
-  created_at: string;
-  current_plan_id: string | null;
-  plans: { name: string } | null;
-};
-
-export function UsersTable({ users }: { users: UserRow[] }) {
+export function UsersTable({
+  users: initialUsers,
+  planFilterId,
+  planFilterName,
+}: {
+  users: AdminUserRow[];
+  planFilterId?: string;
+  planFilterName?: string | null;
+}) {
   const [search, setSearch] = useState("");
+  const [users, setUsers] = useState(initialUsers);
+  const [isSearching, setIsSearching] = useState(false);
 
-  const filtered = users.filter((u) => {
-    const q = search.toLowerCase();
-    return (
-      (u.email?.toLowerCase().includes(q) ?? false) ||
-      (u.name?.toLowerCase().includes(q) ?? false)
-    );
-  });
+  useEffect(() => {
+    setUsers(initialUsers);
+  }, [initialUsers]);
+
+  useEffect(() => {
+    const term = search.trim();
+
+    if (term.length < 2) {
+      setUsers(initialUsers);
+      setIsSearching(false);
+      return;
+    }
+
+    setIsSearching(true);
+    const timer = setTimeout(async () => {
+      const results = await fetchUsersAdminList(term, planFilterId);
+      setUsers(results);
+      setIsSearching(false);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [search, initialUsers, planFilterId]);
 
   const statusVariant = (s: string) => {
     if (s === "active") return "default";
@@ -44,9 +61,14 @@ export function UsersTable({ users }: { users: UserRow[] }) {
     return "secondary";
   };
 
+  const isRemoteSearch = search.trim().length >= 2;
+  const emptyMessage = isRemoteSearch
+    ? "Nenhum usuário encontrado para esta busca"
+    : "Nenhum usuário encontrado";
+
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
           <Input
@@ -55,7 +77,17 @@ export function UsersTable({ users }: { users: UserRow[] }) {
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9"
           />
+          {isSearching && (
+            <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 size-4 animate-spin text-muted-foreground" />
+          )}
         </div>
+        <p className="text-xs text-muted-foreground">
+          {isRemoteSearch
+            ? `Buscando em todos os usuários (${users.length} resultado${users.length === 1 ? "" : "s"})`
+            : planFilterId
+              ? `Mostrando usuários do plano ${planFilterName ?? "selecionado"} (${users.length})`
+              : "Mostrando os 50 usuários mais recentes — digite 2+ caracteres para buscar todos"}
+        </p>
       </div>
 
       <div className="rounded-md border">
@@ -72,22 +104,20 @@ export function UsersTable({ users }: { users: UserRow[] }) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filtered.length === 0 ? (
+            {users.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
-                  Nenhum usuário encontrado
+                  {emptyMessage}
                 </TableCell>
               </TableRow>
             ) : (
-              filtered.map((user) => (
+              users.map((user) => (
                 <TableRow key={user.id}>
                   <TableCell className="font-medium">
                     {user.name || "—"}
                   </TableCell>
                   <TableCell>{user.email || "—"}</TableCell>
-                  <TableCell>
-                    {user.plans?.name ?? "—"}
-                  </TableCell>
+                  <TableCell>{user.plans?.name ?? "—"}</TableCell>
                   <TableCell>
                     <Badge variant={statusVariant(user.subscription_status)}>
                       {user.subscription_status}

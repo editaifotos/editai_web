@@ -82,5 +82,11 @@
 ## Arquivos gerados
 
 - `supabase-email-reset-password.html` — Versão completa com wrapper
-- `supabase-email-reset-password-simple.html` — Versão para colar no Supabase
+- `supabase-email-reset-password-simple.html` — Versão para colar no Supabase (logo em base64)
 - `SUPABASE_EMAIL_TEMPLATE_README.md` — Este guia
+
+---
+
+## Nota sobre a logo
+
+A logo no template está **embutida em base64** (data URI), pois o Supabase não permite anexos ou imagens externas nos templates de email. Isso garante que a logo apareça mesmo quando clientes de email bloqueiam imagens de URLs externas.

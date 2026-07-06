@@ -6,6 +6,7 @@ interface MetricCardProps {
   value: string | number;
   change?: number;
   changeLabel?: string;
+  subtitle?: string;
   icon: LucideIcon;
 }
 
@@ -14,6 +15,7 @@ export function MetricCard({
   value,
   change,
   changeLabel,
+  subtitle,
   icon: Icon,
 }: MetricCardProps) {
   return (
@@ -24,6 +26,9 @@ export function MetricCard({
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">{value}</div>
+        {subtitle && (
+          <p className="text-xs mt-1 text-muted-foreground">{subtitle}</p>
+        )}
         {change !== undefined && changeLabel && (
           <p
             className={`text-xs mt-1 ${
